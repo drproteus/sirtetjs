@@ -16,4 +16,4 @@ fclean: clean
 
 .PHONY: serve
 serve:
-	bun run serve
+	bun run serve dist
