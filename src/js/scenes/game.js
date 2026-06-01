@@ -41,19 +41,19 @@ class GameScene extends Phaser.Scene {
     const layer = this.playfieldMap.createLayer(0, tiles, 16, 0)
   }
   update() {
-    // // Get a random tile, fill if empty or increment it's tile index.
-    // let x = Math.floor(Math.random() * this.widthTiles)
-    // let y = Math.floor(Math.random() * this.heightTiles)
-    // let v = this.playfieldMap.getTileAt(x, y)
-    // let n = 1;
-    // if (v) {
-    //   n = (v.index + 1) % 3
-    // }
-    // this.playfieldMap.putTileAt(n, x, y)
-    // // Delete a random tile
-    // x = Math.floor(Math.random() * this.widthTiles)
-    // y = Math.floor(Math.random() * this.heightTiles)
-    // this.playfieldMap.removeTileAt(x, y)
+    // Get a random tile, fill if empty or increment it's tile index.
+    let x = Math.floor(Math.random() * this.widthTiles)
+    let y = Math.floor(Math.random() * this.heightTiles)
+    let v = this.playfieldMap.getTileAt(x, y)
+    let n = 1;
+    if (v) {
+      n = (v.index + 1) % 3
+    }
+    this.playfieldMap.putTileAt(n, x, y)
+    // Delete a random tile
+    x = Math.floor(Math.random() * this.widthTiles)
+    y = Math.floor(Math.random() * this.heightTiles)
+    this.playfieldMap.removeTileAt(x, y)
   }
 }
 
