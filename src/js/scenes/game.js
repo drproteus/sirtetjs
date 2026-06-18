@@ -24,8 +24,10 @@ class GameScene extends Phaser.Scene {
       [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
       [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
       [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [0, 4, 3, 2, 2, 9, 3, 4, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     ]
+    this.fallTime = 0
+    this.fallSpeed = 0.5 // seconds per cell fall
   }
   preload() {
     this.load.image("field", "assets/field.png")
@@ -40,60 +42,35 @@ class GameScene extends Phaser.Scene {
     this.playfieldMap = this.make.tilemap({ data: this.playfield, tileWidth: 8, tileHeight: 8 })
     this.playfieldTiles = this.playfieldMap.addTilesetImage("blocks")
     this.playfieldLayer = this.playfieldMap.createLayer(0, this.playfieldTiles, 16, 0)
-    this.playfieldMap.setCollisionByExclusion([-1])
+    this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
 
     this.piece = new JPiece()
-    this.pieceMap = this.make.tilemap({ data: this.piece.render(), tileWidth: 8, tileHeight: 8 })
-    this.pieceTiles = this.pieceMap.addTilesetImage("blocks")
-    this.pieceLayer = this.pieceMap.createLayer(0, this.pieceTiles, 16, 32)
-    this.pieceMap.setCollisionByExclusion([-1], false)
-
+    this.piece.x = 0
+    this.piece.y = 0
     this.input.keyboard.on("keydown-Z", this.rotateCW, this)
     this.input.keyboard.on("keydown-X", this.rotateCCW, this)
     this.cursors = this.input.keyboard.createCursorKeys()
   }
   update(t, delta) {
-    let newX = 0;
-    let newY = 0;
-    if (this.cursors.down.isDown) {
-      newY = 1
-    } else if (this.cursors.up.isDown) {
-      newY = -1
+    this.fallTime += delta / 1000.0
+    if (this.fallTime >= this.fallSpeed) {
+      this.piece.y += 1
+      this.fallTime = 0
     }
-    if (this.cursors.right.isDown) {
-      newX = 1
-    } else if (this.cursors.left.isDown) {
-      newX = -1
-    }
-    if (this.checkCollisions(newX, newY)) {
-      console.log("Collision!")
-    } else {
-      this.pieceLayer.setX(this.pieceLayer.x + newX)
-      this.pieceLayer.setY(this.pieceLayer.y + newY)
-    }
+    this.playfieldMap.destroyLayer(this.pieceLayer)
+    this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
+    this.pieceLayer.putTilesAt(this.piece.render(), this.piece.x, this.piece.y)
   }
   checkCollisions(newX, newY) {
-    let r = this.piece.render()
-    for (let a = 0; a < r[0].length; a++) {
-      for (let b = 0; b < r.length; b++) {
-        if (r[b][a] < 0) continue
-        let xy = this.pieceMap.tileToWorldXY(a, b)
-        if (this.playfieldMap.hasTileAtWorldXY(xy.x + newX, xy.y + newY)) {
-          return true
-        }
-      }
-    }
     return false
   }
   rotateCW() {
     console.log("Rotating CW")
     this.piece.rotateCW()
-    this.pieceMap.putTilesAt(this.piece.render(), 0, 0)
   }
   rotateCCW() {
     console.log("Rotating CCW")
     this.piece.rotateCCW()
-    this.pieceMap.putTilesAt(this.piece.render(), 0, 0)
   }
 }
 
