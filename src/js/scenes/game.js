@@ -53,37 +53,37 @@ class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
   }
   update(t, delta) {
-    if (this.checkCollisions()) {
-      console.log("Hit!")
+    let newX = 0;
+    let newY = 0;
+    if (this.cursors.down.isDown) {
+      newY = 1
+    } else if (this.cursors.up.isDown) {
+      newY = -1
+    }
+    if (this.cursors.right.isDown) {
+      newX = 1
+    } else if (this.cursors.left.isDown) {
+      newX = -1
+    }
+    if (this.checkCollisions(newX, newY)) {
+      console.log("Collision!")
     } else {
-      if (this.cursors.down.isDown) {
-        this.pieceLayer.setY(this.pieceLayer.y += 1)
-      } else if (this.cursors.up.isDown) {
-        this.pieceLayer.setY(this.pieceLayer.y -= 1)
-      }
-      if (this.cursors.right.isDown) {
-        this.pieceLayer.setX(this.pieceLayer.x += 1)
-      } else if (this.cursors.left.isDown) {
-        this.pieceLayer.setX(this.pieceLayer.x -= 1)
-      }
+      this.pieceLayer.setX(this.pieceLayer.x + newX)
+      this.pieceLayer.setY(this.pieceLayer.y + newY)
     }
   }
-  checkCollisions() {
-    for (let i = 0; i < this.widthTiles; i++) {
-      for (let j = 0; j < this.heightTiles; j++) {
-        if (this.playfield[j][i] < 0) continue
-        let r = this.piece.render()
-        for (let a = 0; a < r[0].length; a++) {
-          for (let b = 0; b < r.length; b++) {
-            if (r[b][a] < 0) continue
-            let xy = this.playfieldMap.tileToWorldXY(i, j)
-            if (this.pieceMap.hasTileAtWorldXY(xy.x, xy.y)) {
-              return true
-            }
-          }
+  checkCollisions(newX, newY) {
+    let r = this.piece.render()
+    for (let a = 0; a < r[0].length; a++) {
+      for (let b = 0; b < r.length; b++) {
+        if (r[b][a] < 0) continue
+        let xy = this.pieceMap.tileToWorldXY(a, b)
+        if (this.playfieldMap.hasTileAtWorldXY(xy.x + newX, xy.y + newY)) {
+          return true
         }
       }
     }
+    return false
   }
   rotateCW() {
     console.log("Rotating CW")
