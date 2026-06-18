@@ -119,15 +119,20 @@ class Piece {
     this.index = 0
     this.shape = shape
     this.rotations = T[shape]
+    this.x = 0
+    this.y = 0
   }
   getShape() {
     return this.rotations[this.index]
   }
   rotateCW() {
-    this.index = Math.abs((this.index + 1)) % this.rotations.length;
+    this.index = (this.index + 1) % this.rotations.length;
   }
   rotateCCW() {
-    this.index = Math.abs((this.index - 1)) % this.rotations.length;
+    this.index = (this.index - 1) % this.rotations.length;
+    if (this.index < 0) {
+      this.index = this.index + this.rotations.length;
+    }
   }
   getTilemapIndex(x, y) {
     if (this.getShape()[y][x] == 0) {
@@ -231,4 +236,4 @@ class ZPiece extends Piece {
   }
 }
 
-export { IPiece, OPiece, JPiece, LPiece, SPiece, TPiece, ZPiece }
+export { Piece, IPiece, OPiece, JPiece, LPiece, SPiece, TPiece, ZPiece }
