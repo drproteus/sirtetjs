@@ -47,8 +47,8 @@ class GameScene extends Phaser.Scene {
     this.piece = new JPiece()
     this.piece.x = 0
     this.piece.y = 0
-    this.input.keyboard.on("keydown-Z", this.rotateCW, this)
-    this.input.keyboard.on("keydown-X", this.rotateCCW, this)
+    this.input.keyboard.on("keydown-X", this.rotateCW, this)
+    this.input.keyboard.on("keydown-C", this.rotateCCW, this)
     this.cursors = this.input.keyboard.createCursorKeys()
   }
   update(t, delta) {
