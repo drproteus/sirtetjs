@@ -81,7 +81,6 @@ class GameScene extends Phaser.Scene {
     }
     if (this.checkCollisions(newX, newY)) {
       console.log("COLLISIONS!")
-      this.movingX = false
       return
     }
     this.piece.x = newX
