@@ -89,6 +89,60 @@ class GameScene extends Phaser.Scene {
     this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
     this.pieceLayer.putTilesAt(this.piece.render(), this.piece.x, this.piece.y)
   }
+  checkContact() {
+    let s = this.piece.getShape()
+    let x = this.piece.x
+    let y = this.piece.y
+    for (let i = 0; i < s[0].length; i++) {
+      for (let j = 0; j < s.length; j++) {
+        if (s[j][i] < 1) continue
+        if (y + j + 1 > this.heightTiles) {
+          // floor hit
+          return true
+        } else if (self.playfield[y + j + 1][x + i] != -1) {
+          // touching an occupied cell
+          return true
+        }
+      }
+    }
+    return false
+  }
+  canMoveRight() {
+    let s = this.piece.getShape()
+    let x = this.piece.x
+    let y = this.piece.y
+    for (let i = 0; i < s[0].length; i++) {
+      for (let j = 0; j < s.length; j++) {
+        if (s[j][i] < 1) continue
+        if (x + i - 1 < 0) {
+          // wall to the left of current block
+          return false
+        } else if (self.playfield[y + j][x + i - 1] != 1) {
+          // collide with occupied cell
+          return false
+        }
+      }
+    }
+    return true
+  }
+  canMoveLeft() {
+    let s = this.piece.getShape()
+    let x = this.piece.x
+    let y = this.piece.y
+    for (let i = 0; i < s[0].length; i++) {
+      for (let j = 0; j < s.length; j++) {
+        if (s[j][i] < 1) continue
+        if (x + i + 1 >= self.widthTiles) {
+          // wall to the left of current block
+          return false
+        } else if (self.playfield[y + j][x + i + 1] != 1) {
+          // collide with occupied cell
+          return false
+        }
+      }
+    }
+    return true
+  }
   checkCollisions(x, y) {
     let s = this.piece.getShape()
     for (let i = 0; i < s[0].length; i++) {
