@@ -1,4 +1,5 @@
 // https://tetris.wiki/Nintendo_Rotation_System
+const t = ["i", "o", "j", "l", "s", "t", "z"];
 const T = {
   "i": [
     [
@@ -115,24 +116,30 @@ const T = {
 }
 
 class Piece {
-  constructor(shape) {
+  constructor(shape, playfield) {
     this.index = 0
     this.shape = shape
     this.rotations = T[shape]
     this.x = 0
     this.y = 0
+    this.playfield = playfield
   }
   getShape() {
     return this.rotations[this.index]
   }
+  getCWIndex() {
+    return (this.index + 1) % this.rotations.length;
+  }
+  getCCWIndex() {
+    let i = (this.index - 1) % this.rotations.length;
+    if (i < 0) i = i + this.rotations.length;
+    return i;
+  }
   rotateCW() {
-    this.index = (this.index + 1) % this.rotations.length;
+    this.index = this.getCWIndex();
   }
   rotateCCW() {
-    this.index = (this.index - 1) % this.rotations.length;
-    if (this.index < 0) {
-      this.index = this.index + this.rotations.length;
-    }
+    this.index = this.getCCWIndex();
   }
   getTilemapIndex(x, y) {
     if (this.getShape()[y][x] == 0) {
@@ -192,48 +199,82 @@ class Piece {
     }
     return r;
   }
-}
-
-class IPiece extends Piece {
-  constructor() {
-    super("i")
+  checkContact() {
+    let s = this.getShape()
+    for (let i = 0; i < s[0].length; i++) {
+      for (let j = 0; j < s.length; j++) {
+        if (s[j][i] < 1) continue
+        if (this.y + j + 1 >= this.playfield.length) {
+          // floor hit
+          return true
+        } else if (this.playfield[this.y + j + 1][this.x + i] != -1) {
+          // touching an occupied cell
+          return true
+        }
+      }
+    }
+    return false
+  }
+  canMoveRight() {
+    let s = this.getShape()
+    for (let i = 0; i < s[0].length; i++) {
+      for (let j = 0; j < s.length; j++) {
+        if (s[j][i] < 1) continue
+        if (this.x + i + 1 >= this.playfield[0].length) {
+          // wall to the left of current block
+          return false
+        } else if (this.playfield[this.y + j][this.x + i + 1] != -1) {
+          // collide with occupied cell
+          return false
+        }
+      }
+    }
+    return true
+  }
+  canMoveLeft() {
+    let s = this.getShape()
+    for (let i = 0; i < s[0].length; i++) {
+      for (let j = 0; j < s.length; j++) {
+        if (s[j][i] < 1) continue
+        if (this.x + i - 1 < 0) {
+          // wall to the left of current block
+          return false
+        } else if (this.playfield[this.y + j][this.x + i - 1] != -1) {
+          // collide with occupied cell
+          return false
+        }
+      }
+    }
+    return true
+  }
+  canRotateCW() {
+    return this.canRotateToIndex(this.getCWIndex())
+  }
+  canRotateCCW() {
+    return this.canRotateToIndex(this.getCCWIndex())
+  }
+  canRotateToIndex(i) {
+    let s = this.rotations[this.getCWIndex()]
+    for (let i = 0; i < s[0].length; i++) {
+      for (let j = 0; j < s.length; j++) {
+        if (s[j][i] < 1) continue
+        if (this.x + i < 0) {
+          // would rotate into left wall
+          return false
+        } else if (this.x + i >= this.playfield[0].length) {
+          // would rotate into right wall
+          return false
+        } else if (this.y + j >= this.playfield.length) {
+          // would rotate beneath playfield floor
+          return false
+        } else if (this.playfield[this.y + j][this.x + i] != -1) {
+          // would rotate into occupied cell
+          return false
+        }
+      }
+    }
+    return true
   }
 }
 
-class OPiece extends Piece {
-  constructor() {
-    super("o")
-  }
-}
-
-class JPiece extends Piece {
-  constructor() {
-    super("j")
-  }
-}
-
-class LPiece extends Piece {
-  constructor() {
-    super("l")
-  }
-}
-
-class SPiece extends Piece {
-  constructor() {
-    super("s")
-  }
-}
-
-class TPiece extends Piece {
-  constructor() {
-    super("t")
-  }
-}
-
-class ZPiece extends Piece {
-  constructor() {
-    super("z")
-  }
-}
-
-export { Piece, IPiece, OPiece, JPiece, LPiece, SPiece, TPiece, ZPiece }
+export { Piece, T, t }

@@ -1,13 +1,5 @@
 import Phaser from "phaser"
-import { Piece, ZPiece, SPiece, IPiece, LPiece, JPiece, OPiece } from "../lib/pieces"
-
-const EVENT = {
-  NO_COLLISIONS: 0,
-  LEFT_WALL_COLLIDE: 1,
-  RIGHT_WALL_COLLIDE: 2,
-  FLOOR_COLLIDE: 3,
-  TILE_COLLIDE: 4,
-}
+import { Piece, t } from "../lib/pieces"
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -52,131 +44,85 @@ class GameScene extends Phaser.Scene {
     this.playfieldLayer = this.playfieldMap.createLayer(0, this.playfieldTiles, 16, 0)
     this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
 
-    this.piece = new JPiece()
-    this.piece.x = 0
-    this.piece.y = 0
-    this.input.keyboard.on("keydown-X", this.rotateCW, this)
-    this.input.keyboard.on("keydown-C", this.rotateCCW, this)
+    this.piece = this.getRandomPiece(0, 0)
+    this.buttonCWRotate = this.input.keyboard.addKey("X")
+    this.buttonCCWRotate = this.input.keyboard.addKey("C")
     this.cursors = this.input.keyboard.createCursorKeys()
     this.movingX = false;
+    this.rotating = false;
+    this.pieceLayer.putTilesAt(this.piece.render(), this.piece.x, this.piece.y)
   }
   update(t, delta) {
     let newX = this.piece.x
     let newY = this.piece.y
-    this.fallTime += delta / 1000.0
+    let step = delta / 1000.0
+    // increase falltime by factor of 4 if "down" is held down
+    this.fallTime += (this.cursors.down.isDown ? 4 : 1) * step
     if (this.fallTime >= this.fallSpeed) {
-      newY += 1
+      if (this.piece.checkContact())
+        console.log("Contact!")
+      else
+        newY += 1
       this.fallTime = 0
     }
     if (!this.movingX) {
       if (this.cursors.right.isDown) {
-        newX += 1;
+        if (this.piece.canMoveRight())
+          newX += 1;
+        else
+          console.log("Collision to the right!")
         this.movingX = true;
       } else if (this.cursors.left.isDown) {
-        newX -= 1;
+        if (this.piece.canMoveLeft())
+          newX -= 1;
+        else
+          console.log("Collision to the left!")
         this.movingX = true;
       }
-    } else if (this.cursors.right.isUp && this.cursors.left.isUp) {
+    } else if (this.cursors.right.isUp && this.cursors.left.isUp)
       this.movingX = false;
-    }
-    if (this.checkCollisions(newX, newY)) {
-      console.log("COLLISIONS!")
-      return
-    }
     this.piece.x = newX
     this.piece.y = newY
+    if (!this.rotating) {
+      if (this.buttonCWRotate.isDown) {
+        if (this.piece.canRotateCW()) {
+          this.rotateCW()
+          this.rotating = true
+        }
+      } else if (this.buttonCCWRotate.isDown) {
+        if (this.piece.canRotateCCW()) {
+          this.rotateCCW()
+          this.rotating = true
+        }
+      }
+    } else if (this.buttonCCWRotate.isUp && this.buttonCWRotate.isUp)
+      this.rotating = false
+    // redraw piece
     this.playfieldMap.destroyLayer(this.pieceLayer)
     this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
     this.pieceLayer.putTilesAt(this.piece.render(), this.piece.x, this.piece.y)
   }
-  checkContact() {
-    let s = this.piece.getShape()
-    let x = this.piece.x
-    let y = this.piece.y
-    for (let i = 0; i < s[0].length; i++) {
-      for (let j = 0; j < s.length; j++) {
-        if (s[j][i] < 1) continue
-        if (y + j + 1 > this.heightTiles) {
-          // floor hit
-          return true
-        } else if (self.playfield[y + j + 1][x + i] != -1) {
-          // touching an occupied cell
-          return true
-        }
-      }
-    }
-    return false
-  }
-  canMoveRight() {
-    let s = this.piece.getShape()
-    let x = this.piece.x
-    let y = this.piece.y
-    for (let i = 0; i < s[0].length; i++) {
-      for (let j = 0; j < s.length; j++) {
-        if (s[j][i] < 1) continue
-        if (x + i - 1 < 0) {
-          // wall to the left of current block
-          return false
-        } else if (self.playfield[y + j][x + i - 1] != 1) {
-          // collide with occupied cell
-          return false
-        }
-      }
-    }
-    return true
-  }
-  canMoveLeft() {
-    let s = this.piece.getShape()
-    let x = this.piece.x
-    let y = this.piece.y
-    for (let i = 0; i < s[0].length; i++) {
-      for (let j = 0; j < s.length; j++) {
-        if (s[j][i] < 1) continue
-        if (x + i + 1 >= self.widthTiles) {
-          // wall to the left of current block
-          return false
-        } else if (self.playfield[y + j][x + i + 1] != 1) {
-          // collide with occupied cell
-          return false
-        }
-      }
-    }
-    return true
-  }
-  checkCollisions(x, y) {
-    let s = this.piece.getShape()
-    for (let i = 0; i < s[0].length; i++) {
-      for (let j = 0; j < s.length; j++) {
-        if (s[j][i] < 1) continue
-        if (x + i < 0) {
-          // collides with left side of playfield
-          console.log("Collide with LEFT")
-          return EVENT.LEFT_WALL_COLLIDE
-        } else if (x + i >= this.widthTiles) {
-          // collides with right side of playfield
-          console.log("Collide with RIGHT")
-          return EVENT.RIGHT_WALL_COLLIDE
-        } else if (y + j + 1 > this.heightTiles) {
-          // hit the floor of the playfield
-          console.log("Collid with FLOOR")
-          return EVENT.FLOOR_COLLIDE
-        } else if (this.playfield[y + j][x + i] != -1) {
-          // collides with filled tile
-          // TODO treat this special?
-          console.log("Collide with TILE", x + i, y + j, this.playfield[x + i][y + j])
-          return EVENT.TILE_COLLIDE
-        }
-      }
-    }
-    return EVENT.NO_COLLISIONS
+  getRandomPiece(x, y) {
+    // TODO use appropriate stats distribution for new pieces
+    let i = Math.floor(Math.random() * t.length);
+    let p = new Piece(t[i], this.playfield)
+    p.x = x
+    p.y = y
+    return p
   }
   rotateCW() {
     console.log("Rotating CW")
-    this.piece.rotateCW()
+    if (this.piece.canRotateCW())
+      this.piece.rotateCW()
+    else
+      console.log("CW rotate blocked, would collide!")
   }
   rotateCCW() {
     console.log("Rotating CCW")
-    this.piece.rotateCCW()
+    if (this.piece.canRotateCCW())
+      this.piece.rotateCCW()
+    else
+      console.log("CCW rotate blocked, would collide!")
   }
 }
 
