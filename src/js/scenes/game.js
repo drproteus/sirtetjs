@@ -59,8 +59,13 @@ class GameScene extends Phaser.Scene {
     // increase falltime by factor of 4 if "down" is held down
     this.fallTime += (this.cursors.down.isDown ? 4 : 1) * step
     if (this.fallTime >= this.fallSpeed) {
-      if (this.piece.checkContact())
+      if (this.piece.checkContact()) {
         console.log("Contact!")
+        // TODO add a timer and countdown to give some time before the piece is written to playfield
+        this.commitPiece()
+        this.piece = this.getRandomPiece(0, 0)
+        return
+      }
       else
         newY += 1
       this.fallTime = 0
@@ -123,6 +128,17 @@ class GameScene extends Phaser.Scene {
       this.piece.rotateCCW()
     else
       console.log("CCW rotate blocked, would collide!")
+  }
+  commitPiece() {
+    console.log("Applying piece to playfield")
+    let r = this.piece.render()
+    for (let i = 0; i < r[0].length; i++) {
+      for (let j = 0; j < r.length; j++) {
+        if (r[j][i] < 0) continue
+        this.playfield[this.piece.y + j][this.piece.x + i] = r[j][i]
+      }
+    }
+    this.playfieldLayer.putTilesAt(this.playfield, 0, 0)
   }
 }
 
