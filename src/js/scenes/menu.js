@@ -13,7 +13,7 @@ class MainMenu extends Phaser.Scene {
   create() {
     this.add.image(80, 72, "menu")
     this.selectArrow = this.add.sprite(10, 117, "select")
-    this.sound.play("title")
+    // this.sound.play("title")
     this.cursors = this.input.keyboard.createCursorKeys()
   }
   update() {

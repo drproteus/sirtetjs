@@ -35,8 +35,8 @@ class GameScene extends Phaser.Scene {
     this.load.image("blocks", "assets/block-map.png")
   }
   create() {
-    this.sound.stopAll()
-    this.sound.play("type-a")
+    // this.sound.stopAll()
+    // this.sound.play("type-a")
     this.add.image(80, 72, "field")
 
     this.playfieldMap = this.make.tilemap({ data: this.playfield, tileWidth: 8, tileHeight: 8 })
