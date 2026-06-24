@@ -45,8 +45,8 @@ class GameScene extends Phaser.Scene {
     this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
 
     this.piece = this.getRandomPiece(0, 0)
-    this.buttonCWRotate = this.input.keyboard.addKey("X")
-    this.buttonCCWRotate = this.input.keyboard.addKey("C")
+    this.buttonCWRotate = this.input.keyboard.addKey("C")
+    this.buttonCCWRotate = this.input.keyboard.addKey("X")
     this.cursors = this.input.keyboard.createCursorKeys()
     this.movingX = false;
     this.rotating = false;
