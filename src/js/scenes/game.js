@@ -51,6 +51,10 @@ class GameScene extends Phaser.Scene {
     this.movingX = false;
     this.rotating = false;
     this.pieceLayer.putTilesAt(this.piece.render(), this.piece.x, this.piece.y)
+
+    this.linesCleared = 0;
+    this.score = 0;
+    this.level = 0;
   }
   update(t, delta) {
     let newX = this.piece.x
@@ -158,9 +162,31 @@ class GameScene extends Phaser.Scene {
       this.playfield.unshift(this.getBlankLine());
     }
     this.playfieldLayer.putTilesAt(this.playfield, 0, 0);
+    this.linesCleared += linesCompleted
+    this.updateScore(linesCompleted)
+    console.log("Lines: ", this.linesCleared);
+    console.log("Score: ", this.score);
   }
   getBlankLine() {
     return [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+  }
+  updateScore(n) {
+    let m = 0;
+    switch (n) {
+      case 1:
+        m = 40;
+        break;
+      case 2:
+        m = 100;
+        break;
+      case 3:
+        m = 300;
+        break;
+      case 4:
+        m = 1000;
+        break;
+    }
+    this.score += m * (this.level + 1)
   }
 }
 
