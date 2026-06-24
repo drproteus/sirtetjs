@@ -139,6 +139,28 @@ class GameScene extends Phaser.Scene {
       }
     }
     this.playfieldLayer.putTilesAt(this.playfield, 0, 0)
+    this.checkLines();
+  }
+  checkLines() {
+    console.log("Checking lines for completion")
+    this.playfield = this.playfield.filter((row) => {
+      for (let i = 0; i < row.length; i++) {
+        if (row[i] == -1) {
+          return true
+        }
+      }
+      return false
+    });
+    let linesCompleted = this.heightTiles - this.playfield.length;
+    if (linesCompleted < 1) return
+    console.log(`Cleared ${linesCompleted} lines`)
+    for (let i = 0; i < linesCompleted; i++) {
+      this.playfield.unshift(this.getBlankLine());
+    }
+    this.playfieldLayer.putTilesAt(this.playfield, 0, 0);
+  }
+  getBlankLine() {
+    return [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
   }
 }
 
