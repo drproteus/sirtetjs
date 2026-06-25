@@ -14,8 +14,10 @@ class GameScene extends Phaser.Scene {
   }
   create() {
     this.widthTiles = 10;
-    this.heightTiles = 18;
+    this.heightTiles = 20;
     this.playfield = [
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
       [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
       [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
       [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -48,10 +50,10 @@ class GameScene extends Phaser.Scene {
 
     this.playfieldMap = this.make.tilemap({ data: this.playfield, tileWidth: 8, tileHeight: 8 })
     this.playfieldTiles = this.playfieldMap.addTilesetImage("blocks")
-    this.playfieldLayer = this.playfieldMap.createLayer(0, this.playfieldTiles, 16, 0)
-    this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
+    this.playfieldLayer = this.playfieldMap.createLayer(0, this.playfieldTiles, 16, -16)
+    this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, -16)
 
-    this.spawnPosition = [(this.widthTiles / 2) - 2, -2]
+    this.spawnPosition = [(this.widthTiles / 2) - 2, 0]
 
     this.piece = this.getRandomPiece(this.spawnPosition[0], this.spawnPosition[1])
     this.buttonCWRotate = this.input.keyboard.addKey("C")
@@ -122,7 +124,7 @@ class GameScene extends Phaser.Scene {
       this.rotating = false
     // redraw piece
     this.playfieldMap.destroyLayer(this.pieceLayer)
-    this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
+    this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, -16)
     this.pieceLayer.putTilesAt(this.piece.render(), this.piece.x, this.piece.y)
   }
   getRandomPiece(x, y) {
