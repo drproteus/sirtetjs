@@ -51,7 +51,7 @@ class GameScene extends Phaser.Scene {
     this.playfieldLayer = this.playfieldMap.createLayer(0, this.playfieldTiles, 16, 0)
     this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
 
-    this.spawnPosition = [(this.widthTiles / 2) - 1, -2]
+    this.spawnPosition = [(this.widthTiles / 2) - 2, -2]
 
     this.piece = this.getRandomPiece(this.spawnPosition[0], this.spawnPosition[1])
     this.buttonCWRotate = this.input.keyboard.addKey("C")
@@ -76,6 +76,11 @@ class GameScene extends Phaser.Scene {
         console.log("Contact!")
         // TODO add a timer and countdown to give some time before the piece is written to playfield
         this.commitPiece()
+        if (this.checkBlockOut()) {
+          alert("BLOCK OUT");
+          this.scene.restart();
+          return
+        }
         this.piece = this.getRandomPiece(this.spawnPosition[0], this.spawnPosition[1])
         return
       }
@@ -198,6 +203,17 @@ class GameScene extends Phaser.Scene {
     this.score += m * (this.level + 1)
     this.scoreText.text = this.score
     this.linesText.text = n
+  }
+  checkBlockOut() {
+    // TODO: This doesn't seem accurate
+    // Consider: (https://tasvideos.org/4536S#Losing)
+    let topLine = this.playfield[0];
+    for (let i = 0; i < this.widthTiles; i++) {
+      if (topLine[i] != -1) {
+        return true
+      }
+    }
+    return false
   }
 }
 
