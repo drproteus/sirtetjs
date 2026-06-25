@@ -204,6 +204,7 @@ class Piece {
     for (let i = 0; i < s[0].length; i++) {
       for (let j = 0; j < s.length; j++) {
         if (s[j][i] < 1) continue
+        if (this.y + j < 0) continue
         if (this.y + j + 1 >= this.playfield.length) {
           // floor hit
           return true
@@ -220,6 +221,7 @@ class Piece {
     for (let i = 0; i < s[0].length; i++) {
       for (let j = 0; j < s.length; j++) {
         if (s[j][i] < 1) continue
+        if (this.y + j < 0) continue
         if (this.x + i + 1 >= this.playfield[0].length) {
           // wall to the left of current block
           return false
@@ -236,6 +238,7 @@ class Piece {
     for (let i = 0; i < s[0].length; i++) {
       for (let j = 0; j < s.length; j++) {
         if (s[j][i] < 1) continue
+        if (this.y + j < 0) continue
         if (this.x + i - 1 < 0) {
           // wall to the left of current block
           return false
@@ -258,6 +261,7 @@ class Piece {
     for (let i = 0; i < s[0].length; i++) {
       for (let j = 0; j < s.length; j++) {
         if (s[j][i] < 1) continue
+        if (this.y + i < 0) continue
         if (this.x + i < 0) {
           // would rotate into left wall
           return false

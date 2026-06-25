@@ -51,7 +51,9 @@ class GameScene extends Phaser.Scene {
     this.playfieldLayer = this.playfieldMap.createLayer(0, this.playfieldTiles, 16, 0)
     this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, 0)
 
-    this.piece = this.getRandomPiece(0, 0)
+    this.spawnPosition = [(this.widthTiles / 2) - 1, -2]
+
+    this.piece = this.getRandomPiece(this.spawnPosition[0], this.spawnPosition[1])
     this.buttonCWRotate = this.input.keyboard.addKey("C")
     this.buttonCCWRotate = this.input.keyboard.addKey("X")
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -74,7 +76,7 @@ class GameScene extends Phaser.Scene {
         console.log("Contact!")
         // TODO add a timer and countdown to give some time before the piece is written to playfield
         this.commitPiece()
-        this.piece = this.getRandomPiece(0, 0)
+        this.piece = this.getRandomPiece(this.spawnPosition[0], this.spawnPosition[1])
         return
       }
       else
