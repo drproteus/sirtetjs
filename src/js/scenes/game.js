@@ -33,11 +33,18 @@ class GameScene extends Phaser.Scene {
     this.load.image("field", "assets/field.png")
     this.load.audio("type-a", "assets/type-a.mp3")
     this.load.image("blocks", "assets/block-map.png")
+
+    this.load.bitmapFont("tetris", "assets/tetris_1.png", "assets/tetris.xml")
   }
   create() {
     // this.sound.stopAll()
     // this.sound.play("type-a")
     this.add.image(80, 72, "field")
+
+    this.scoreText = this.add.bitmapText(8 * (this.widthTiles + 4), 8 * 3, "tetris", "0")
+    this.levelText = this.add.bitmapText(8 * (this.widthTiles + 5), 8 * 7, "tetris", "0")
+    this.linesText = this.add.bitmapText(8 * (this.widthTiles + 5), 8 * 10, "tetris", "0")
+
 
     this.playfieldMap = this.make.tilemap({ data: this.playfield, tileWidth: 8, tileHeight: 8 })
     this.playfieldTiles = this.playfieldMap.addTilesetImage("blocks")
@@ -187,6 +194,8 @@ class GameScene extends Phaser.Scene {
         break;
     }
     this.score += m * (this.level + 1)
+    this.scoreText.text = this.score
+    this.linesText.text = n
   }
 }
 
