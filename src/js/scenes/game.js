@@ -4,6 +4,15 @@ import { Piece, t } from "../lib/pieces"
 class GameScene extends Phaser.Scene {
   constructor() {
     super({ key: "gameScene" })
+  }
+  preload() {
+    this.load.image("field", "assets/field.png")
+    this.load.audio("type-a", "assets/type-a.mp3")
+    this.load.image("blocks", "assets/block-map.png")
+
+    this.load.bitmapFont("tetris", "assets/tetris_1.png", "assets/tetris.xml")
+  }
+  create() {
     this.widthTiles = 10;
     this.heightTiles = 18;
     this.playfield = [
@@ -28,15 +37,6 @@ class GameScene extends Phaser.Scene {
     ]
     this.fallTime = 0
     this.fallSpeed = 0.5 // seconds per cell fall
-  }
-  preload() {
-    this.load.image("field", "assets/field.png")
-    this.load.audio("type-a", "assets/type-a.mp3")
-    this.load.image("blocks", "assets/block-map.png")
-
-    this.load.bitmapFont("tetris", "assets/tetris_1.png", "assets/tetris.xml")
-  }
-  create() {
     // this.sound.stopAll()
     // this.sound.play("type-a")
     this.add.image(80, 72, "field")
