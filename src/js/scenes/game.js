@@ -180,10 +180,9 @@ class GameScene extends Phaser.Scene {
       this.playfield.unshift(this.getBlankLine());
     }
     this.playfieldLayer.putTilesAt(this.playfield, 0, 0);
-    this.linesCleared += linesCompleted
     this.updateScore(linesCompleted)
-    console.log("Lines: ", this.linesCleared);
     console.log("Score: ", this.score);
+    console.log("Lines: ", this.linesCleared);
   }
   getBlankLine() {
     return [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
@@ -205,8 +204,9 @@ class GameScene extends Phaser.Scene {
         break;
     }
     this.score += m * (this.level + 1)
+    this.linesCleared += n
     this.scoreText.text = this.score
-    this.linesText.text = n
+    this.linesText.text = this.linesCleared
   }
 }
 
