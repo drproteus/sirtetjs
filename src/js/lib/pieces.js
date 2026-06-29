@@ -116,13 +116,17 @@ const T = {
 }
 
 class Piece {
-  constructor(shape, playfield) {
+  constructor(shape, playfield, x, y) {
     this.index = 0
     this.shape = shape
     this.rotations = T[shape]
-    this.x = 0
-    this.y = 0
+    this.x = x
+    this.y = y
     this.playfield = playfield
+  }
+  moveTo(x, y) {
+    this.x = x;
+    this.y = y;
   }
   getShape() {
     return this.rotations[this.index]
@@ -198,6 +202,18 @@ class Piece {
       }
     }
     return r;
+  }
+  checkOverlap() {
+    let s = this.getShape()
+    for (let i = 0; i < s[0].length; i++) {
+      for (let j = 0; j < s.length; j++) {
+        if (s[j][i] < 1) continue
+        if (this.playfield[this.y + j][this.x + i] != -1) {
+          return true
+        }
+      }
+    }
+    return false
   }
   checkContact() {
     let s = this.getShape()

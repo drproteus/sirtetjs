@@ -78,12 +78,14 @@ class GameScene extends Phaser.Scene {
         console.log("Contact!")
         // TODO add a timer and countdown to give some time before the piece is written to playfield
         this.commitPiece()
-        if (this.checkBlockOut()) {
-          alert("BLOCK OUT");
-          this.scene.restart();
-          return
-        }
         this.piece = this.getRandomPiece(this.spawnPosition[0], this.spawnPosition[1])
+        this.drawPiece()
+        if (this.piece.checkOverlap()) {
+          console.log("Block out!")
+          alert("Block out!")
+          this.scene.restart()
+        }
+        this.fallTime = 0
         return
       }
       else
@@ -106,8 +108,7 @@ class GameScene extends Phaser.Scene {
       }
     } else if (this.cursors.right.isUp && this.cursors.left.isUp)
       this.movingX = false;
-    this.piece.x = newX
-    this.piece.y = newY
+    this.piece.moveTo(newX, newY)
     if (!this.rotating) {
       if (this.buttonCWRotate.isDown) {
         if (this.piece.canRotateCW()) {
@@ -122,6 +123,9 @@ class GameScene extends Phaser.Scene {
       }
     } else if (this.buttonCCWRotate.isUp && this.buttonCWRotate.isUp)
       this.rotating = false
+    this.drawPiece()
+  }
+  drawPiece() {
     // redraw piece
     this.playfieldMap.destroyLayer(this.pieceLayer)
     this.pieceLayer = this.playfieldMap.createBlankLayer(1, this.playfieldTiles, 16, -16)
@@ -130,9 +134,7 @@ class GameScene extends Phaser.Scene {
   getRandomPiece(x, y) {
     // TODO use appropriate stats distribution for new pieces
     let i = Math.floor(Math.random() * t.length);
-    let p = new Piece(t[i], this.playfield)
-    p.x = x
-    p.y = y
+    let p = new Piece(t[i], this.playfield, x, y)
     return p
   }
   rotateCW() {
@@ -205,17 +207,6 @@ class GameScene extends Phaser.Scene {
     this.score += m * (this.level + 1)
     this.scoreText.text = this.score
     this.linesText.text = n
-  }
-  checkBlockOut() {
-    // TODO: This doesn't seem accurate
-    // Consider: (https://tasvideos.org/4536S#Losing)
-    let topLine = this.playfield[0];
-    for (let i = 0; i < this.widthTiles; i++) {
-      if (topLine[i] != -1) {
-        return true
-      }
-    }
-    return false
   }
 }
 
